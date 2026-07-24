@@ -193,10 +193,13 @@ std::tuple<MySQLConnectionParameters, unordered_set<string>> MySQLUtils::ParseCo
 		} else if (key == "ssl_key") {
 			set_options.insert("ssl_key");
 			result.ssl_key = value;
+		} else if (key == "connect_timeout") {
+			set_options.insert("connect_timeout");
+			result.connect_timeout = static_cast<uint32_t>(std::stoul(value));
 		} else {
 			throw InvalidInputException("Unrecognized configuration parameter \"%s\" "
 			                            "- expected options are host, "
-			                            "user, passwd, db, port, socket",
+			                            "user, passwd, db, port, socket, connect_timeout",
 			                            key);
 		}
 	}
@@ -230,6 +233,12 @@ std::tuple<MySQLConnectionParameters, unordered_set<string>> MySQLUtils::ParseCo
 			} else {
 				result.client_flag &= ~CLIENT_COMPRESS;
 			}
+		}
+	}
+	if (set_options.find("connect_timeout") == set_options.end()) {
+		string connect_timeout_str;
+		if (ReadOptionFromEnv("MYSQL_CONNECT_TIMEOUT", connect_timeout_str)) {
+			result.connect_timeout = static_cast<uint32_t>(std::stoul(connect_timeout_str));
 		}
 	}
 	return std::make_tuple(result, set_options);
@@ -290,6 +299,11 @@ MYSQL *MySQLUtils::Connect(const string &dsn, const string &attach_path) {
 
 	SetSSLOptions(mysql, config);
 
+	if (config.connect_timeout > 0) {
+		unsigned int timeout = config.connect_timeout;
+		mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, &timeout);
+	}
+
 	// get connection options
 	const char *host = config.host.empty() ? nullptr : config.host.c_str();
 	const char *user = config.user.empty() ? nullptr : config.user.c_str();
@@ -305,6 +319,10 @@ MYSQL *MySQLUtils::Connect(const string &dsn, const string &attach_path) {
 			// options were partially cleared after the connection failure above
 			// and need to be re-applied
 			SetSSLOptions(mysql, config);
+			if (config.connect_timeout > 0) {
+				unsigned int timeout = config.connect_timeout;
+				mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, &timeout);
+			}
 			// re-try to establish connection specifying IP address to avoid using unix sockets
 			result =
 			    mysql_real_connect(mysql, "127.0.0.1", user, passwd, db, config.port, unix_socket, config.client_flag);

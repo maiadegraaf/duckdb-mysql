@@ -273,6 +273,7 @@ void ParseAttributes(const vector<URIToken> &tokens, idx_t attribute_start, vect
 	uri_attribute_map["ssl-crl"] = "ssl_crl";
 	uri_attribute_map["ssl-crlpath"] = "ssl_crlpath";
 	uri_attribute_map["ssl-key"] = "ssl_key";
+	uri_attribute_map["connect-timeout"] = "connect_timeout";
 
 	// parse key=value attributes
 	for (idx_t i = attribute_start; i < tokens.size(); i += 2) {
@@ -437,6 +438,7 @@ string MySQLCatalog::GetConnectionString(ClientContext &context, const string &a
 		new_connection_info += AddConnectionOption(kv_secret, "ssl_crl", existing_params);
 		new_connection_info += AddConnectionOption(kv_secret, "ssl_crlpath", existing_params);
 		new_connection_info += AddConnectionOption(kv_secret, "ssl_key", existing_params);
+		new_connection_info += AddConnectionOption(kv_secret, "connect_timeout", existing_params);
 
 		// Combine the parameters, putting secret parameters first
 		if (!new_connection_info.empty()) {
