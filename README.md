@@ -14,15 +14,16 @@ USE mysqlscanner;
 
 The connection string determines the parameters for how to connect to MySQL as a set of `key=value` pairs. Any options not provided are read from the corresponding environment variables if set, and otherwise replaced by their default values, as per the table below.
 
-| Setting  |        Description         | Environment Variable |   Default    |
-|----------|----------------------------|----------------------|--------------|
-| host     | Name of host to connect to | `MYSQL_HOST`           | localhost    |
-| user     | MySQL user name            | `MYSQL_USER`           | current_user |
-| password | MySQL password             | `MYSQL_PWD`            |              |
-| database | Database name              | `MYSQL_DATABASE`       | NULL         |
-| port     | Port number                | `MYSQL_TCP_PORT`       | 0            |
-| socket   | Unix socket file name      | `MYSQL_UNIX_PORT`      | NULL         |
-| compress | Compress MySQL packet      | `MYSQL_COMPRESS`       | 1            |
+| Setting         |                          Description                           | Environment Variable    |   Default    |
+|-----------------|----------------------------------------------------------------|-------------------------|--------------|
+| host            | Name of host to connect to                                     | `MYSQL_HOST`            | localhost    |
+| user            | MySQL user name                                                | `MYSQL_USER`            | current_user |
+| password        | MySQL password                                                 | `MYSQL_PWD`             |              |
+| database        | Database name                                                  | `MYSQL_DATABASE`        | NULL         |
+| port            | Port number                                                    | `MYSQL_TCP_PORT`        | 0            |
+| socket          | Unix socket file name                                          | `MYSQL_UNIX_PORT`       | NULL         |
+| compress        | Compress MySQL packet                                          | `MYSQL_COMPRESS`        | 1            |
+| connect_timeout | Timeout in seconds for connecting to the MySQL server          | `MYSQL_CONNECT_TIMEOUT` | 0 (no limit) |
 
 
 The tables in the file can be read as if they were normal DuckDB tables, but the underlying data is read directly from MySQL at query time.

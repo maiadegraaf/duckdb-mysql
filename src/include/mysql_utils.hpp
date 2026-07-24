@@ -110,6 +110,7 @@ struct MySQLConnectionParameters {
 	string ssl_crl;
 	string ssl_crl_path;
 	string ssl_key;
+	uint32_t connect_timeout = 0;
 };
 
 enum class MySQLResultStreaming { UNINITIALIZED, ALLOW_STREAMING, FORCE_MATERIALIZATION };
