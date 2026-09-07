@@ -73,13 +73,17 @@ static bool TableIsInternal(const SchemaCatalogEntry &schema, const string &name
 }
 
 MySQLTableEntry::MySQLTableEntry(Catalog &catalog, SchemaCatalogEntry &schema, CreateTableInfo &info)
-    : TableCatalogEntry(catalog, schema, info) {
+    : TableCatalogEntry(catalog, schema, info), columns(std::move(info.columns)) {
 	this->internal = TableIsInternal(schema, name.GetIdentifierName());
 }
 
 MySQLTableEntry::MySQLTableEntry(Catalog &catalog, SchemaCatalogEntry &schema, MySQLTableInfo &info)
-    : TableCatalogEntry(catalog, schema, *info.create_info) {
+    : TableCatalogEntry(catalog, schema, *info.create_info), columns(std::move(info.create_info->columns)) {
 	this->internal = TableIsInternal(schema, name.GetIdentifierName());
+}
+
+const ColumnList &MySQLTableEntry::GetColumns() const {
+	return columns;
 }
 
 unique_ptr<BaseStatistics> MySQLTableEntry::GetStatistics(ClientContext &context, column_t column_id) {
